@@ -23,25 +23,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
-function(req, res) {
+app.get('/', util.isLoggedIn, function(req, res) {
+  //we haven't defined auth.isLoggedIn
   res.render('index');
 });
 
-app.get('/create', 
-function(req, res) {
+app.get('/create', util.isLoggedIn, function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
-function(req, res) {
+app.get('/links', util.isLoggedIn, function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
 });
 
-app.post('/links', 
-function(req, res) {
+app.post('/links', function(req, res) {
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -76,15 +73,25 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
+//make app.post function to handle when a user is logging in
+  //then query the database to see if the username & password exists
+  //if user exists in database
+    //...
+
 app.get('/signup', function(req, res) {
   res.render('signup');
 });
 
 app.post('/signup', function(req, res) {
-  console.log(req.body);
-  new User(req.body).save();
-  // db.knex('users').where('')
-  db.knex.select().from('users').then(function(rows) { console.log('users table after', rows); } );
+  //console.log(req.body);
+  new User(req.body).save().then(function(model) {
+    db.knex.select().from('users').then(function(rows) { 
+      // console.log(JSON.stringify(rows));
+      res.end(JSON.stringify(rows)); 
+    });
+  });
+  res.end();
+  // db.knex.select().from('users').then(function(rows) { console.log('users table after', rows); } );
   
 });
 /************************************************************/
