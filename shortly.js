@@ -72,6 +72,21 @@ function(req, res) {
   });
 });
 
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+app.post('/signup', function(req, res) {
+  console.log(req.body);
+  new User(req.body).save();
+  // db.knex('users').where('')
+  db.knex.select().from('users').then(function(rows) { console.log('users table after', rows); } );
+  
+});
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
